@@ -1,6 +1,9 @@
 ﻿using CRUDAppAssesment.Models;
 using CRUDAppAssesment.Products;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.IO;
+using System.Text;
 
 namespace CRUDAppAssesment.Controllers
 {
@@ -59,7 +62,6 @@ namespace CRUDAppAssesment.Controllers
         {
             var CreatedProduct = _Products.CreateProduct(NewProduct);
             return Ok();
-            //should be changed to Created type return method
         }
         // Delete the Product
         [HttpDelete("{ID}")]
@@ -71,7 +73,18 @@ namespace CRUDAppAssesment.Controllers
                 return NotFound();
             }
             var Result = _Products.DeleteProduct(ProductToDelete);
+            DeleteLogger(ID, ProductToDelete);
             return Ok();
+        }
+        private void DeleteLogger(int ID,Product ProductDetails)
+        {
+            using (StreamWriter writetext = new StreamWriter("./log/log.txt", true))
+            {
+                StringBuilder LogString = new StringBuilder();
+                LogString.Append(DateTime.Now+" >> DELETE REQUEST FOR PRODUCT "+ProductDetails.Name+" WITH ID "+ProductDetails.ID);
+                writetext.Write(LogString.ToString());
+                writetext.Close();
+            }
         }
 
     }
